@@ -42,10 +42,13 @@ def analyze(s):
     elif cnt_x + cnt_o == 9:
         print("Draw")
     else:
-        print("Game not finished")
+        return True
+    return False
 
+# t = input("Enter cells: ")
+t = "_________"
+isXgo = True
 
-t = input("Enter cells: ")
 draw(t)
 while True:
     digs = input("Enter the coordinates: ")
@@ -57,9 +60,12 @@ while True:
         row, col = digs.split()
         k = 3 * (int(row) - 1) + int(col) -1
         if t[k] == '_':
-            t = t[:k] + 'X' + t[k + 1:]
-            break
+            ch = "X" if isXgo else "O"
+            t = t[:k] + ch + t[k + 1:]
+            isXgo = not isXgo
         else:
             print("This cell is occupied! Choose another one!")
-# analyze(t)
-draw(t)
+            continue
+    draw(t)
+    if not analyze(t):
+        break
