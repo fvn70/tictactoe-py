@@ -1,71 +1,52 @@
-import re
+win_combos = (
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6])
 
 
-def sum_chars(s, ch):
-    m = [0 for c in s]
-    for i in range(3):
-        for j in range(3):
-            if s[i * 3 + j] == ch:
-                m[i] += 1
-                m[j + 3] += 1
-                if i == j:
-                    m[6] += 1
-                if j == 2 - i:
-                    m[7] += 1
-    return m
+def get_winner(board):
+    win = None
+    if abs(board.count('X') - board.count('O')) > 1:
+        return "Impossible"
+    for player in ('X', 'O'):
+        for combos in win_combos:
+            if board[combos[0]] == player \
+                    and board[combos[1]] == player \
+                    and board[combos[2]] == player:
+                if win is None:
+                    win = player
+                elif win != player:
+                    win = "Impossible"
+    if win is not None:
+        return win
+    if '_' not in board:
+        return "Draw"
+    return None
 
-def draw(s):
+
+def draw(board):
     k = 0
     line = "---------\n"
     for i in range(3):
         line += "| "
         for j in range(3):
-            line += f"{s[k]} "
+            line += f"{board[k]} "
             k += 1
         line += "|\n"
     line += "---------"
     print(line)
 
-def analyze(s):
-    ch_x = sum_chars(t, 'X')
-    ch_o = sum_chars(t, 'O')
-    cnt_x = ch_x[0] + ch_x[1] + ch_x[2]
-    cnt_o = ch_o[0] + ch_o[1] + ch_o[2]
-    is_x_win = 3 in ch_x
-    is_o_win = 3 in ch_o
-    if abs(cnt_x - cnt_o) > 1 or is_x_win and is_o_win:
-        print("Impossible")
-    elif is_x_win:
-        print("X wins")
-    elif is_o_win:
-        print("O wins")
-    elif cnt_x + cnt_o == 9:
-        print("Draw")
-    else:
-        return True
-    return False
 
-# t = input("Enter cells: ")
-t = "_________"
-isXgo = True
-
-draw(t)
-while True:
-    digs = input("Enter the coordinates: ")
-    if not re.match("[1-9] [1-9]", digs):
-        print("You should enter numbers!")
-    elif not re.match("[1-3] [1-3]", digs):
-        print("Coordinates should be from 1 to 3!")
+def analyze(board):
+    win = get_winner(board)
+    if win in ('X', 'O'):
+        print(win + " wins")
+    elif win is None:
+        print("Game not finished")
     else:
-        row, col = digs.split()
-        k = 3 * (int(row) - 1) + int(col) -1
-        if t[k] == '_':
-            ch = "X" if isXgo else "O"
-            t = t[:k] + ch + t[k + 1:]
-            isXgo = not isXgo
-        else:
-            print("This cell is occupied! Choose another one!")
-            continue
-    draw(t)
-    if not analyze(t):
-        break
+        print(win)
+
+
+s_board = input("Enter cells: ")
+draw(s_board)
+analyze(s_board)
